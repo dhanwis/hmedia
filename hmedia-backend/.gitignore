@@ -1,0 +1,9 @@
+# Ignore virtual environment
+hmedia-env/
+
+# Ignore database file
+test.db
+
+# Ignore Python cache files
+__pycache__/
+*.pyc

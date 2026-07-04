@@ -1,0 +1,269 @@
+popp/* @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Noto+Serif+Malayalam:wght@400;700&display=swap"); */
+
+/* Define CSS variables for fonts */
+:root {
+  --font-poppins: "Poppins", sans-serif;
+  --font-malayalam: "Noto Serif Malayalam", serif;
+}
+
+/* Apply fonts globally */
+body {
+  font-family: var(--font-poppins);
+}
+
+.font-mal {
+  font-family: var(--font-malayalam);
+}
+
+/* Ticker Animation */
+.animate-marquee {
+  animation: marquee 25s linear infinite;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f9fafb;
+}
+::-webkit-scrollbar-thumb {
+  background: #bfa242;
+  border-radius: 4px;
+}
+
+.swiper-pagination-bullet {
+  background: #ffffff !important;
+  opacity: 0.5;
+}
+
+.swiper-pagination-bullet-active {
+  background: #bfa242 !important;
+  opacity: 1;
+}
+
+/* Hide scrollbar */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Fade-in effect for loader */
+@keyframes fade {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.animate-fade {
+  animation: fade 0.2s ease-in-out;
+}
+
+/* ===============================
+   WYSIWYG / CKEditor Content
+   =============================== */
+
+.article-content {
+  line-height: 1.7;
+  word-wrap: break-word;
+}
+
+/* Paragraphs */
+.article-content p {
+  margin: 0 0 1em;
+}
+
+/* Lists */
+.article-content ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin: 1em 0;
+}
+
+.article-content ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+  margin: 1em 0;
+}
+
+.article-content li {
+  margin: 0.4em 0;
+}
+
+/* TEXT ALIGNMENT (INLINE STYLES) */
+.article-content [style*="text-align:center"] {
+  text-align: center;
+}
+
+.article-content [style*="text-align:right"] {
+  text-align: right;
+}
+
+.article-content [style*="text-align:left"] {
+  text-align: left;
+}
+
+.article-content [style*="text-align:justify"] {
+  text-align: justify;
+}
+
+/* TEXT ALIGNMENT (EDITOR CLASSES) */
+.article-content .align-center {
+  text-align: center;
+}
+
+.article-content .align-right {
+  text-align: right;
+}
+
+.article-content .align-left {
+  text-align: left;
+}
+
+.article-content .align-justify {
+  text-align: justify;
+}
+
+.article-content img {
+  max-width: 100%;
+  /* height: clamp(12rem, 40vw, 31.25rem); */
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+
+/* Image alignment */
+.article-content img[style*="float:left"] {
+  float: left;
+  margin-right: 1rem;
+}
+
+.article-content img[style*="float:right"] {
+  float: right;
+  margin-left: 1rem;
+}
+
+/* Tables */
+.article-content table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.article-content th,
+.article-content td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+/* Links */
+.article-content a {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+/* Hide video remove button on user-facing side */
+.article-content .ql-video-remove {
+  display: none;
+}
+
+.ql-tooltip.ql-hidden {
+  display: none;
+}
+
+.ql-tooltip {
+  top: 50px !important;
+  left: 100px !important;
+  transform: none !important;
+}
+
+.ql-editor li.ql-indent-1 > .ql-ui::before {
+  content: "" !important;
+  display: none !important;
+}
+
+.adsbygoogle {
+  width: 100%;
+  min-height: 250px;
+}
+
+/* FORCE ShareThis to NEVER stick to bottom (ALL DEVICES) */
+.sharethis-sticky-share-buttons,
+.st-sticky {
+  top: 50% !important;
+  bottom: auto !important;
+  left: 0 !important;
+  right: auto !important;
+  position: fixed !important;
+  display: flex !important;
+  flex-direction: column !important;
+  width: 48px !important;
+  z-index: 9999 !important;
+}
+
+/* Kill bottom variant completely */
+.st-bottom,
+.st-stick-bottom,
+.sharethis-sticky-share-buttons.st-bottom {
+  display: none !important;
+}
+
+/* Remove the forced padding/margin ShareThis adds to the body */
+body,
+html {
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* Hide any invisible "spacer" elements ShareThis creates at the bottom */
+.st-sticky-share-buttons.st-bottom,
+#st-el-1.st-bottom,
+.st-spacer {
+  display: none !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Ensure the vertical bar on the left doesn't create scrollbars */
+.sharethis-sticky-share-buttons {
+  overflow: visible !important;
+}
+
+/* Smaller ShareThis buttons on MOBILE */
+@media (max-width: 768px) {
+  .sharethis-sticky-share-buttons,
+  .st-sticky {
+    width: 30px !important;
+  }
+
+  .st-sticky .st-btn {
+    width: 30px !important;
+    height: 30px !important;
+    padding: 1px !important;
+  }
+
+  .st-sticky .st-btn svg {
+    width: 18px !important;
+    height: 18px !important;
+  }
+
+  .st-sticky .st-label {
+    display: none !important;
+  }
+}

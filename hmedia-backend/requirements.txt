@@ -1,0 +1,13 @@
+fastapi==0.115.1
+uvicorn[standard]==0.23.2
+sqlalchemy==2.0.20
+pydantic==2.6.2
+python-dotenv==1.0.0
+a2wsgi 
+uvicorn
+python-jose[cryptography]
+bcrypt==3.2.0
+passlib
+pymysql
+python-multipart
+beautifulsoup4==4.14.3
