@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Plus, Edit, Trash2, ChevronLeft, Loader2 } from "lucide-react";
 import Pagination from "../../components/admin/Pagination";
 import DynamicTable from "../../components/admin/DynamicTable";
@@ -15,8 +16,14 @@ import {
 } from "../../services/moreNewsService";
 // import { toggleIsSponsoredMeetThePerson } from "../../services/meetPersonService";
 
+import { addLatestNews, updateLatestNews } from "../../services/latestNewsService";
+import { addCinemaNews, updateCinemaNews } from "../../services/cinemaNewsService";
+import { addMeetPerson, updateMeetPerson } from "../../services/meetPersonService";
+
+
 function AdminMoreNewsPage() {
   const { baseURL } = useApi();
+  const navigate = useNavigate();
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -87,49 +94,80 @@ function AdminMoreNewsPage() {
   // --------------------------
   // ADD / UPDATE SUBMIT
   // --------------------------
-  const handleFormSubmit = async (articleData) => {
+   const handleFormSubmit = async (articleData) => {
     setServerError(null);
-    const form = new FormData();
-    form.append("title", articleData.title);
-    form.append("slug", articleData.slug);
-    form.append("content", articleData.content);
-    form.append("author", articleData.author);
-    form.append("date", articleData.date);
-
-    form.append("trending", articleData.trending);
-
-    form.append("tags", JSON.stringify(articleData.tags || []));
-    //old code for image replacement issue
-    // if (articleData.imageFile) {
-    //   form.append("image", articleData.imageFile);
-    // }
-    //new code for solved image replacement
-    if (articleData.imageFile) {
-  const file = articleData.imageFile;
-  const ext = file.name.split(".").pop();
-
-  const uniqueName = `more_${Date.now()}_${Math.floor(Math.random() * 10000)}.${ext}`;
-
-  const renamedFile = new File([file], uniqueName, { type: file.type });
-
-  form.append("image", renamedFile);
-}
-
-
     try {
-      if (view === "add") {
-        await addMoreNews(baseURL, form);
-      } else {
-        await updateMoreNews(baseURL, articleData.id, form);
+      const form = new FormData();
+      form.append("title", articleData.title);
+      form.append("slug", articleData.slug);
+      form.append("content", articleData.content);
+      form.append("author", articleData.author);
+      form.append("date", articleData.date);
+      form.append("trending", articleData.trending);
+      form.append("tags", JSON.stringify(articleData.tags || []));
+
+      // if (articleData.imageFile) {
+      //   const file = articleData.imageFile;
+      //   const ext = file.name.split(".").pop();
+      //   const prefix = articleData.selectedCategory || "more";
+      //   const uniqueName = `${prefix}_${Date.now()}_${Math.floor(Math.random() * 10000)}.${ext}`;
+      //   const renamedFile = new File([file], uniqueName, { type: file.type });
+      //   form.append("image", renamedFile);
+      // }
+
+
+      if (articleData.imageFile) {
+        form.append("image", articleData.imageFile);
       }
 
-      await loadData();
-      setView("list");
-      setEditingArticle(null);
+
+      const cat = articleData.selectedCategory || "more";
+
+      if (view === "add") {
+        if (cat === "latest") await addLatestNews(baseURL, form);
+        else if (cat === "cinema") await addCinemaNews(baseURL, form);
+        else if (cat === "more") await addMoreNews(baseURL, form);
+        else if (cat === "meetperson") await addMeetPerson(baseURL, form);
+
+        // 07/07/26
+
+
+      } else {
+        if (cat === "more") {
+          // Same category — normal update
+          await updateMoreNews(baseURL, articleData.id, form);
+        } else {
+          // Different category — add to new category, delete from old
+          if (cat === "latest") await addLatestNews(baseURL, form);
+          else if (cat === "cinema") await addCinemaNews(baseURL, form);
+          else if (cat === "meetperson") await addMeetPerson(baseURL, form);
+          // Delete from more (the original category)
+          await deleteMoreNews(baseURL, articleData.id);
+        }
+      }
+
+      
+      // If same category, reload data and go to list view
+      // If different category, navigate to that category's page
+      if (cat === "more") {
+        await loadData();
+        setView("list");
+        setEditingArticle(null);
+      } else {
+        const categoryRoutes = {
+          latest: "/hmedianews/latestnews",
+          cinema: "/hmedianews/cinemanews",
+          meetperson: "/hmedianews/meettheperson",
+        };
+        navigate(categoryRoutes[cat]);
+      }
+
+
     } catch (err) {
       setServerError(err.message || "An error occurred. Please try again.");
     }
   };
+
 
   // --------------------------
   // DELETE
@@ -422,6 +460,7 @@ function AdminMoreNewsPage() {
             onCancel={handleCancel}
             buttonText="Add Business Stories"
             serverError={serverError}
+            category="more"
           />
         </div>
       )}
@@ -452,6 +491,7 @@ function AdminMoreNewsPage() {
             onCancel={handleCancel}
             buttonText="Update Business Stories"
             serverError={serverError}
+            category="more"
           />
         </div>
       )}

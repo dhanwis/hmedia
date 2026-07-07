@@ -23,3 +23,36 @@ export const fetchArticleBySlug = async (baseURL, category, slug) => {
 };
 
 
+
+
+export const checkImageExists = async (
+  baseURL,
+  filename,
+  category
+) => {
+  try {
+    const token = localStorage.getItem("access_token");
+
+    const res = await fetch(
+      `${baseURL}/admin/check-image-exists?filename=${encodeURIComponent(
+        filename
+      )}&category=${category}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!res.ok) {
+      throw new Error("Failed to check image");
+    }
+
+    return await res.json();
+  } catch (err) {
+    console.error("Error checking image existence", err);
+    return null;
+  }
+};
+
+

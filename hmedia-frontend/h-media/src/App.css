@@ -267,3 +267,23 @@ html {
     display: none !important;
   }
 }
+
+
+/* justify content */
+
+/* Quill text alignment classes */
+.article-content .ql-align-center {
+  text-align: center;
+}
+
+.article-content .ql-align-right {
+  text-align: right;
+}
+
+.article-content .ql-align-left {
+  text-align: left;
+}
+
+.article-content .ql-align-justify {
+  text-align: justify;
+}

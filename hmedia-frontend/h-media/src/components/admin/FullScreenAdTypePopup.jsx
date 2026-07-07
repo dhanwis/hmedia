@@ -10,7 +10,7 @@ export default function FullScreenAdTypePopup({
   return (
     <div
       className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4"
-      onClick={onClose}
+      // onClick={onClose}
     >
       <div
         className="bg-gray-800 w-full max-w-xl rounded-lg border border-gray-700 shadow-2xl text-white"

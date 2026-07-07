@@ -1,9 +1,15 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Plus, Edit, Trash2, ChevronLeft, Loader2 } from "lucide-react";
 import Pagination from "../../components/admin/Pagination";
 import DynamicTable from "../../components/admin/DynamicTable";
 import ConfirmationPopup from "../../components/admin/ConfirmationPopup";
 import AddArticle from "../../components/admin/AddArticle";
+
+import { addLatestNews, updateLatestNews } from "../../services/latestNewsService";
+import { addMoreNews, updateMoreNews } from "../../services/moreNewsService";
+import { addMeetPerson, updateMeetPerson } from "../../services/meetPersonService";
+
 
 import { useApi } from "../../context/ApiContext";
 import {
@@ -18,6 +24,7 @@ import { toggleShowViewCountCinemaNews } from "../../services/cinemaNewsService"
 
 function AdminCinemaNewsPage() {
   const { baseURL } = useApi();
+  const navigate = useNavigate();
   const [newsData, setNewsData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [view, setView] = useState("list");
@@ -77,7 +84,7 @@ function AdminCinemaNewsPage() {
 
   const handlePageChange = (page) => setCurrentPage(page);
 
-  // ---------------- ADD NEWS ----------------
+    // ---------------- ADD NEWS ----------------
   const handleFormSubmit = async (articleData) => {
     setServerError(null);
     try {
@@ -87,41 +94,70 @@ function AdminCinemaNewsPage() {
       form.append("author", articleData.author);
       form.append("content", articleData.content);
       form.append("date", articleData.date);
-
       form.append("trending", articleData.trending);
       form.append("tags", JSON.stringify(articleData.tags || []));
 
+      // if (articleData.imageFile) {
+      //   const file = articleData.imageFile;
+      //   const ext = file.name.split(".").pop();
+      //   const prefix = articleData.selectedCategory || "cinema";
+      //   const uniqueName = `${prefix}_${Date.now()}_${Math.floor(Math.random() * 10000)}.${ext}`;
+      //   const renamedFile = new File([file], uniqueName, { type: file.type });
+      //   form.append("image", renamedFile);
+      // }
+
       if (articleData.imageFile) {
-        //old image code 
-        // form.append("image", articleData.imageFile);
-        //new image replacement code 
-        if (articleData.imageFile) {
-  const file = articleData.imageFile;
-
-  const ext = file.name.split(".").pop();
-  const uniqueName = `cinema_${Date.now()}_${Math.floor(Math.random() * 10000)}.${ext}`;
-
-  const renamedFile = new File([file], uniqueName, { type: file.type });
-
-  form.append("image", renamedFile);
-}
-
+        form.append("image", articleData.imageFile);
       }
+
+
+
+      const cat = articleData.selectedCategory || "cinema";
 
       if (view === "add") {
-        await addCinemaNews(baseURL, form);
-      } else {
-        await updateCinemaNews(baseURL, articleData.id, form);
+        if (cat === "latest") await addLatestNews(baseURL, form);
+        else if (cat === "cinema") await addCinemaNews(baseURL, form);
+        else if (cat === "more") await addMoreNews(baseURL, form);
+        else if (cat === "meetperson") await addMeetPerson(baseURL, form);
+
+// 07/06/26
+
+              } else {
+        if (cat === "cinema") {
+          // Same category — normal update
+          await updateCinemaNews(baseURL, articleData.id, form);
+        } else {
+          // Different category — add to new category, delete from old
+          if (cat === "latest") await addLatestNews(baseURL, form);
+          else if (cat === "more") await addMoreNews(baseURL, form);
+          else if (cat === "meetperson") await addMeetPerson(baseURL, form);
+          // Delete from cinema (the original category)
+          await deleteCinemaNews(baseURL, articleData.id);
+        }
       }
 
-      await loadData();
-      setView("list");
-      setEditingArticle(null);
+      
+      // If same category, reload data and go to list view
+      // If different category, navigate to that category's page
+      if (cat === "cinema") {
+        await loadData();
+        setView("list");
+        setEditingArticle(null);
+      } else {
+        const categoryRoutes = {
+          latest: "/hmedianews/latestnews",
+          more: "/hmedianews/more",
+          meetperson: "/hmedianews/meettheperson",
+        };
+        navigate(categoryRoutes[cat]);
+      }
+
     } catch (error) {
       console.error("An error occurred. Please try again.");
       setServerError(error.message || "An error occurred. Please try again.");
     }
   };
+
 
   // ---------------- EDIT NEWS ----------------
   const handleEdit = (newsItem) => {
@@ -400,6 +436,7 @@ function AdminCinemaNewsPage() {
             onSubmit={handleFormSubmit}
             buttonText="Add Cinema News"
             serverError={serverError}
+            category="cinema"
           />
         </div>
       )}
@@ -421,6 +458,7 @@ function AdminCinemaNewsPage() {
             onSubmit={handleFormSubmit}
             buttonText="Update Cinema News"
             serverError={serverError}
+            category="cinema"
           />
         </div>
       )}

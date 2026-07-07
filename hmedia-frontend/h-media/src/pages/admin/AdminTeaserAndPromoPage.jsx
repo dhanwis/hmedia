@@ -426,7 +426,7 @@ function AdminTeaserAndPromoPage() {
       {isFormModalOpen && (
         <div
           className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4"
-          onClick={handleCloseFormModal}
+          // onClick={handleCloseFormModal}
         >
           <div
             className="bg-gray-800 w-full max-w-lg rounded-lg border border-gray-700 shadow-2xl text-white overflow-hidden"

@@ -1,4 +1,9 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
+// 07/07/2026
+import { useNavigate } from "react-router-dom";
+// adithya code
+import { useApi } from "../../context/ApiContext";
+import { checkImageExists } from "../../services/fetchArticleBySlug";
 import DatePicker from "react-datepicker";
 import { UploadCloud, X } from "lucide-react";
 import ReactQuill from "react-quill-new";
@@ -22,8 +27,15 @@ function AddArticle({
   onSubmit,
   buttonText = "Submit",
   serverError,
+  category = "",
 }) {
   const quillRef = useRef(null);
+
+  // 07/07/2026
+
+  const navigate = useNavigate();
+  const { baseURL } = useApi(); 
+  const [selectedCategory, setSelectedCategory] = useState(category);
 
   const [title, setTitle] = useState("");
   const [slug, setSlug] = useState("");
@@ -192,6 +204,36 @@ function AddArticle({
     }
   }, []);
 
+  // Re-check image duplicate if admin changes the category dropdown
+  useEffect(() => {
+    const recheckImage = async () => {
+      if (imageFile && selectedCategory) {
+        const currentImageName = initialData?.image
+          ? initialData.image.split("/").pop()
+          : null;
+        
+        const isSameAsCurrent =
+          currentImageName &&
+          imageFile.name.toLowerCase() === currentImageName.toLowerCase();
+        if (!isSameAsCurrent) {
+          const data = await checkImageExists(baseURL, imageFile.name, selectedCategory);
+          if (data?.exists) {
+            setErrors((prev) => ({
+              ...prev,
+              image: `This image name already exists ("${data.cleaned_filename}") in the selected category. Please rename and re-upload the image.`,
+            }));
+            setImageFile(null);
+            setImagePreviewUrl("");
+            const fileInput = document.getElementById("image");
+            if (fileInput) fileInput.value = "";
+            alert(`Image "${data.cleaned_filename}" already exists in the selected category. Please rename and upload again.`);
+          }
+        }
+      }
+    };
+    recheckImage();
+  }, [selectedCategory]);
+
   const handleRemoveImage = () => {
     setImageFile(null);
     setImagePreviewUrl("");
@@ -262,31 +304,95 @@ function AddArticle({
     });
   };
 
-  const handleImageChange = async (e) => {
+  // adithyta code
+
+ const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
     setErrors((prev) => ({ ...prev, image: undefined }));
 
-    const orientation = await checkOrientation(file);
-    if (orientation !== "landscape") {
+  // Orientation check
+  const orientation = await checkOrientation(file);
+  if (orientation !== "landscape") {
+    setErrors((prev) => ({
+      ...prev,
+      image: "Please upload a landscape image.",
+    }));
+    setImageFile(null);
+    setImagePreviewUrl("");
+    return;
+  }
+
+  // // Clean filename (remove "(1)", "(2)", etc.)
+  const dotIndex = file.name.lastIndexOf(".");
+  const base = dotIndex === -1 ? file.name : file.name.substring(0, dotIndex);
+  const ext = dotIndex === -1 ? "" : file.name.substring(dotIndex);
+  const cleanBase = base.split("(")[0].trim();
+  const cleanedName = cleanBase + ext;
+
+  // Allow same image while editing
+  const currentImageName = initialData?.image
+    ? initialData.image.split("/").pop()
+    : null;
+
+  const isSameAsCurrent =
+    currentImageName &&
+    cleanedName.toLowerCase() === currentImageName.toLowerCase();
+
+  // // Call backend API
+  // if (category && !isSameAsCurrent) {
+
+
+  //   const data = await checkImageExists(baseURL, file.name, category);
+
+    // Call backend API
+  if (selectedCategory && !isSameAsCurrent) {
+    const data = await checkImageExists(baseURL, file.name, selectedCategory);
+
+
+    if (data?.exists) {
       setErrors((prev) => ({
         ...prev,
-        image: "Please upload a landscape image.",
+        image: `This image name already exists ("${data.cleaned_filename}"). Please rename and re-upload the image.`,
       }));
+
+      
+
+      // Optional browser alert
+      alert(
+        `Image "${data.cleaned_filename}" already exists. Please rename the file and upload again.`
+      );
+
       setImageFile(null);
       setImagePreviewUrl("");
+      e.target.value = "";
       return;
     }
+  }
 
-    const compressedBlob = await compressImage(file, 500);
-    const compressedFile = new File([compressedBlob], file.name, {
-      type: compressedBlob.type,
-    });
+  // Compress image
+  const compressedBlob = await compressImage(file, 500);
 
-    setImageFile(compressedFile);
-    setImagePreviewUrl(URL.createObjectURL(compressedFile));
-  };
+  // Save with cleaned filename
+  const compressedFile = new File([compressedBlob], cleanedName, {
+    type: compressedBlob.type,
+  });
+
+  setImageFile(compressedFile);
+  setImagePreviewUrl(URL.createObjectURL(compressedFile));
+};
+
+  //   const compressedBlob = await compressImage(file, 500);
+  //   const compressedFile = new File([compressedBlob], file.name, {
+  //     type: compressedBlob.type,
+  //   });
+
+  //   setImageFile(compressedFile);
+  //   setImagePreviewUrl(URL.createObjectURL(compressedFile));
+  // };
+
+
 
   const handleSubmitForm = async (e) => {
     e.preventDefault();
@@ -319,6 +425,7 @@ function AddArticle({
       trending,
       tags,
       id: initialData?.id,
+      selectedCategory,
     };
 
     try {
@@ -337,6 +444,30 @@ function AddArticle({
       </div>
 
       <form onSubmit={handleSubmitForm} className="p-4 sm:p-6 md:p-8 space-y-6">
+
+
+
+      {/* #07/07/2026 */}
+      {/* CATEGORY SELECTOR */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Category
+          </label>
+          <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className="mt-1 block w-full px-4 py-2.5 bg-gray-50 border border-gray-300 focus:outline-none focus:ring-0 focus:border-brand-red rounded-lg"
+          >
+            <option value="latest">Latest News</option>
+            <option value="cinema">Cinema News</option>
+            <option value="more">Business Stories</option>
+            <option value="meetperson">Meet The Person</option>
+          </select>
+        </div>
+        {/* CATEGORY */}
+
+
+
         {/* TITLE */}
         <div>
           <label className="block text-sm font-medium text-gray-700">

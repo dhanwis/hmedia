@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Plus, Edit, Trash2, ChevronLeft, Loader2, Home } from "lucide-react";
+
 import { useApi } from "../../context/ApiContext";
 import {
   addLatestNews,
@@ -15,8 +17,14 @@ import ConfirmationPopup from "../../components/admin/ConfirmationPopup";
 import AddArticle from "../../components/admin/AddArticle";
 import { toggleShowViewCountLatestNews } from "../../services/latestNewsService";
 
+import { addCinemaNews, updateCinemaNews } from "../../services/cinemaNewsService";
+import { addMoreNews, updateMoreNews } from "../../services/moreNewsService";
+import { addMeetPerson, updateMeetPerson } from "../../services/meetPersonService";
+
+
 function AdminLatestPage() {
   const { baseURL } = useApi();
+  const navigate = useNavigate();
 
   const [newsData, setNewsData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -151,42 +159,70 @@ function AdminLatestPage() {
       form.append("author", articleData.author);
       form.append("content", articleData.content);
       form.append("date", articleData.date);
-
       form.append("trending", articleData.trending);
       form.append("tags", JSON.stringify(articleData.tags || []));
-      //old image code 
+
       // if (articleData.imageFile) {
-      //   form.append("image", articleData.imageFile);
+      //   const file = articleData.imageFile;
+      //   const ext = file.name.split(".").pop();
+      //   const prefix = articleData.selectedCategory || "latest";
+      //   const uniqueName = `${prefix}_${Date.now()}_${Math.floor(Math.random() * 10000)}.${ext}`;
+      //   const renamedFile = new File([file], uniqueName, { type: file.type });
+      //   form.append("image", renamedFile);
       // }
 
-      //new image replacement issue solved code 
       if (articleData.imageFile) {
-  const file = articleData.imageFile;
-  const ext = file.name.split(".").pop();
-
-  const uniqueName = `latest_${Date.now()}_${Math.floor(Math.random() * 10000)}.${ext}`;
-
-  const renamedFile = new File([file], uniqueName, { type: file.type });
-
-  form.append("image", renamedFile);
-}
-
-
-      if (view === "add") {
-        await addLatestNews(baseURL, form);
-      } else {
-        await updateLatestNews(baseURL, articleData.id, form);
+        form.append("image", articleData.imageFile); // 👈 Simply append the file directly
       }
 
-      await loadData();
-      setView("list");
-      setEditingArticle(null);
+
+      const cat = articleData.selectedCategory || "latest";
+
+      if (view === "add") {
+        if (cat === "latest") await addLatestNews(baseURL, form);
+        else if (cat === "cinema") await addCinemaNews(baseURL, form);
+        else if (cat === "more") await addMoreNews(baseURL, form);
+        else if (cat === "meetperson") await addMeetPerson(baseURL, form);
+
+        // 07/06/2026 edit page category
+        
+
+            } else {
+        if (cat === "latest") {
+          // Same category — normal update
+          await updateLatestNews(baseURL, articleData.id, form);
+        } else {
+          // Different category — add to new category, delete from old
+          if (cat === "cinema") await addCinemaNews(baseURL, form);
+          else if (cat === "more") await addMoreNews(baseURL, form);
+          else if (cat === "meetperson") await addMeetPerson(baseURL, form);
+          // Delete from latest (the original category)
+          await deleteLatestNews(baseURL, articleData.id);
+        }
+      }
+
+
+      // If same category, reload data and go to list view
+      // If different category, navigate to that category's page
+      if (cat === "latest") {
+        await loadData();
+        setView("list");
+        setEditingArticle(null);
+      } else {
+        const categoryRoutes = {
+          cinema: "/hmedianews/cinemanews",
+          more: "/hmedianews/more",
+          meetperson: "/hmedianews/meettheperson",
+        };
+        navigate(categoryRoutes[cat]);
+      }
+
     } catch (err) {
       console.error("Error submitting form");
-
       setServerError(err.message || "An error occurred. Please try again.");
     }
   };
+
 
   const handleEdit = (newsItem) => {
     setServerError(null);
@@ -409,6 +445,7 @@ function AdminLatestPage() {
               view === "add" ? "Add Latest News" : "Update Latest News"
             }
             serverError={serverError}
+            category="latest"
           />
         </div>
       )}
