@@ -205,8 +205,9 @@ def get_all_news_paginate(db: Session, page: int = 1, limit: int = 12):
         "items": items
     }
 
+#changed 04/07/2026
 
-def get_news_by_slug(db: Session, slug: int):
+def get_news_by_slug(db: Session, slug: str):
     return db.query(models.News).filter(models.News.slug == slug).first()
 
 
