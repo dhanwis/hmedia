@@ -87,7 +87,11 @@ export default function ArticleCard({
         <img
   src={image}
     // src={`${baseURL}/${image}`}
-  alt={title}
+  // alt={title}
+
+  // 10/07/26
+    alt={sanitizeContent(title, 50)}
+
   loading="lazy"
   className="w-full h-full object-fill transition-transform duration-500 group-hover:scale-105"
 />
@@ -107,9 +111,15 @@ export default function ArticleCard({
         )}
       </div>
       <div>
+        {/* 10/07/26 */}
+              
         <h3 className="font-bold text-base md:text-[18px] group-hover:text-brand-red transition-colors leading-snug line-clamp-2">
-          {title}
+          {sanitizeContent(title, 100)} {/* <-- Uses sanitizeContent to decode and strip HTML */}
         </h3>
+
+        {/* <h3 className="font-bold text-base md:text-[18px] group-hover:text-brand-red transition-colors leading-snug line-clamp-2">
+          {title}
+        </h3> */}
         {/* Strip HTML tags from content */}
         {/* {content && (
           <p className="text-xs sm:text-sm md:[text-14px] text-black mt-1.5 line-clamp-2 leading-relaxed">

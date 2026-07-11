@@ -7,6 +7,71 @@ popp/* @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;40
   --font-malayalam: "Noto Serif Malayalam", serif;
 }
 
+/* 10/06/26 */
+
+/* 1. Define the actual font family rules */
+.ql-font-poppins {
+  font-family: 'Poppins', sans-serif !important;
+}
+.ql-font-noto-serif-malayalam {
+  font-family: 'Noto Serif Malayalam', serif !important;
+}
+
+/* 2. Style the text inside the dropdown list items */
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="poppins"]::before {
+  content: 'Poppins' !important;
+  font-family: 'Poppins', sans-serif;
+}
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="noto-serif-malayalam"]::before {
+  content: 'Noto Serif Malayalam' !important;
+  font-family: 'Noto Serif Malayalam', serif;
+}
+
+/* 3. Style the current active font label on the toolbar */
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="poppins"]::before {
+  content: 'Poppins' !important;
+}
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="noto-serif-malayalam"]::before {
+  content: 'Noto Serif Malayalam' !important;
+}
+/* 1. Define the actual font family rules */
+.ql-font-anek-malayalam {
+  font-family: 'Anek Malayalam', sans-serif !important;
+}
+.ql-font-manjari {
+  font-family: 'Manjari', sans-serif !important;
+}
+.ql-font-baloo-chettan {
+  font-family: 'Baloo Chettan 2', sans-serif !important;
+}
+
+/* 2. Style the dropdown list items */
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="anek-malayalam"]::before {
+  content: 'Anek Malayalam' !important;
+  font-family: 'Anek Malayalam', sans-serif;
+}
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="manjari"]::before {
+  content: 'Manjari' !important;
+  font-family: 'Manjari', sans-serif;
+}
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="baloo-chettan"]::before {
+  content: 'Baloo Chettan' !important;
+  font-family: 'Baloo Chettan 2', sans-serif;
+}
+
+/* 3. Style the current active font label on the toolbar */
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="anek-malayalam"]::before {
+  content: 'Anek Malayalam' !important;
+}
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="manjari"]::before {
+  content: 'Manjari' !important;
+}
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="baloo-chettan"]::before {
+  content: 'Baloo Chettan' !important;
+}
+
+
+
 /* Apply fonts globally */
 body {
   font-family: var(--font-poppins);

@@ -21,6 +21,8 @@ import { fetchBottomAdBanner } from "../services/bottomAdService";
 import { fetchPopupAd } from "../services/popupAdService";
 import PopupAd from "../components/user/PopupAd";
 import { fetchFullScreenAds } from "../services/fullScreenAdService";
+import "react-quill-new/dist/quill.snow.css";
+
 
 const decodeHTML = (html = "") => {
   if (typeof window === "undefined") return html;
@@ -300,7 +302,7 @@ function ArticleDetailPage() {
   if (loading) {
     return (
       <>
-        <CustomLoader />
+        <CustomLoader />c
       </>
     );
   }
@@ -366,7 +368,11 @@ function ArticleDetailPage() {
   return (
     <>
       <Helmet>
-        <title>{article.title}</title>
+
+      {/* 10/06/26 */}
+        {/* Strip HTML tags for the browser tab title */}
+        <title>{stripHTML(article.title)}</title>
+        {/* <title>{article.title}</title> */}
 
         <meta
           name="description"
@@ -384,7 +390,12 @@ function ArticleDetailPage() {
         />
 
         {/* Open Graph */}
-        <meta property="og:type" content="article" />
+        {/* 10/06/26 */}
+
+        {/* Strip HTML tags for social share titles */}
+        <meta property="og:title" content={stripHTML(article.title)} />
+
+        {/* <meta property="og:type" content="article" /> */}
         <meta property="og:title" content={article.title} />
         <meta
           property="og:description"
@@ -426,9 +437,24 @@ function ArticleDetailPage() {
           {/* LEFT CONTENT */}
           <div className="lg:col-span-9">
             <header className="mb-6">
-              <h1 className="text-xl md:text-3xl font-extrabold mb-4 font-mal">
+
+{/* 10/07/26*/}
+
+              {/* Add !border-0 and !bg-transparent to remove the border and background */}
+                <div className="ql-container ql-snow !border-0 !bg-transparent">
+                  <h1 
+                    className="text-xl md:text-3xl font-extrabold mb-4 font-mal ql-editor !p-0"
+                    dangerouslySetInnerHTML={{ __html: article.title }}
+                  />
+                </div>
+
+
+
+              {/* <h1 className="text-xl md:text-3xl font-extrabold mb-4 font-mal">
                 {article.title}
-              </h1>
+              </h1> */}
+
+
               {/* <div className="flex items-center space-x-4 text-gray-600 text-sm">
                 <span className="flex items-center">
                   <User size={16} className="mr-1" />

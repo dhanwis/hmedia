@@ -276,11 +276,25 @@ function AdminCinemaNewsPage() {
       accessor: "imageUrl",
       altAccessor: "title",
     },
+
+    // 10/07/26
+
     {
       header: "Title",
       accessor: "title",
       cellClassName: "font-medium text-gray-900 max-w-xs truncate",
+      // cell: (row) => <span dangerouslySetInnerHTML={{ __html: row.title }} />
+      // 10/07/26
+      cell: (row) => <span dangerouslySetInnerHTML={{ __html: row?.title || "" }} />
+
     },
+
+
+    // {
+    //   header: "Title",
+    //   accessor: "title",
+    //   cellClassName: "font-medium text-gray-900 max-w-xs truncate",
+    // },
 
     {
       header: "SLUG",
