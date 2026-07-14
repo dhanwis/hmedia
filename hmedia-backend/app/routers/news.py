@@ -426,81 +426,81 @@ def read_news_api(
 #PUBLIC SEO + SPA FALLBACK
 #========================
 
-@public_router.get("/{slug}", response_model=None)
-def read_news_detail(
-    request: Request,
-    slug: str,
-    db: Session = Depends(get_db)
-):
-    news = db.query(News).filter(News.slug == slug).first()
-    if not news:
-        raise HTTPException(status_code=404)
+# @public_router.get("/{slug}", response_model=None)
+# def read_news_detail(
+#     request: Request,
+#     slug: str,
+#     db: Session = Depends(get_db)
+# ):
+#     news = db.query(News).filter(News.slug == slug).first()
+#     if not news:
+#         raise HTTPException(status_code=404)
     
-#changed here 3/26
-    # ADD THIS USER-AGENT BOT CHECK:
-    user_agent = request.headers.get("user-agent", "").lower()
-    is_bot = any(bot in user_agent for bot in BOT_KEYWORDS)
-    # NORMAL HUMAN USERS → Redirect to Frontend domain
-    if not is_bot:
-        return RedirectResponse(url=f"{FRONTEND_URL}/news/{slug}", status_code=302)
-    # HEAD request (WhatsApp/Facebook prefetch)
-    if request.method == "HEAD":
-        return HTMLResponse(status_code=200)
+# #changed here 3/26
+#     # ADD THIS USER-AGENT BOT CHECK:
+#     user_agent = request.headers.get("user-agent", "").lower()
+#     is_bot = any(bot in user_agent for bot in BOT_KEYWORDS)
+#     # NORMAL HUMAN USERS → Redirect to Frontend domain
+#     if not is_bot:
+#         return RedirectResponse(url=f"{FRONTEND_URL}/news/{slug}", status_code=302)
+#     # HEAD request (WhatsApp/Facebook prefetch)
+#     if request.method == "HEAD":
+#         return HTMLResponse(status_code=200)
     
 
 
-#changed here 3/26
+# #changed here 3/26
 
-    # image_url = (
-    #     news.image if news.image and news.image.startswith("https://")
-    #     else f"{BACKEND_URL}/{news.image}" if news.image
-    #     else f"{BACKEND_URL}/static/brand/og-default.jpg"
-    # )
+#     # image_url = (
+#     #     news.image if news.image and news.image.startswith("https://")
+#     #     else f"{BACKEND_URL}/{news.image}" if news.image
+#     #     else f"{BACKEND_URL}/static/brand/og-default.jpg"
+#     # )
 
-    if news.image:
-        if news.image.startswith("http"):
-            image_url = news.image
-        else:
-            image_url = f"{BACKEND_URL}/{urllib.parse.quote(news.image)}"
-    else:
-        image_url = f"{BACKEND_URL}/static/brand/og-default.jpg"
+#     if news.image:
+#         if news.image.startswith("http"):
+#             image_url = news.image
+#         else:
+#             image_url = f"{BACKEND_URL}/{urllib.parse.quote(news.image)}"
+#     else:
+#         image_url = f"{BACKEND_URL}/static/brand/og-default.jpg"
 
 
-    clean_text = re.sub(r"<[^>]+>", "", news.content or "")
-    clean_text = re.sub(r"\s+", " ", clean_text).strip()
-    description = clean_text[:200]
+#     clean_text = re.sub(r"<[^>]+>", "", news.content or "")
+#     clean_text = re.sub(r"\s+", " ", clean_text).strip()
+#     description = clean_text[:200]
 
-    html = f"""<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>{news.title}</title>
+#     html = f"""<!DOCTYPE html>
+# <html lang="en">
+# <head>
+# <meta charset="UTF-8">
+# <title>{news.title}</title>
 
-<meta name="description" content="{description}" />
-<meta property="og:title" content="{news.title}" />
-<meta property="og:description" content="{description}" />
-<meta property="og:url" content="{FRONTEND_URL}/news/{news.slug}" />
-<meta property="og:type" content="article" />
-<meta property="og:site_name" content="HMedia" />
+# <meta name="description" content="{description}" />
+# <meta property="og:title" content="{news.title}" />
+# <meta property="og:description" content="{description}" />
+# <meta property="og:url" content="{FRONTEND_URL}/news/{news.slug}" />
+# <meta property="og:type" content="article" />
+# <meta property="og:site_name" content="HMedia" />
 
-<meta property="og:image" content="{image_url}" />
-<meta property="og:image:secure_url" content="{image_url}" />
-<meta property="og:image:width" content="1200" />
-<meta property="og:image:height" content="630" />
+# <meta property="og:image" content="{image_url}" />
+# <meta property="og:image:secure_url" content="{image_url}" />
+# <meta property="og:image:width" content="1200" />
+# <meta property="og:image:height" content="630" />
 
-<meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="{news.title}" />
-<meta name="twitter:description" content="{description}" />
-<meta name="twitter:image" content="{image_url}" />
-</head>
-<body>
-<div id="root"></div>
-<script src="/static/js/main.js"></script>
-</body>
-</html>
-"""
+# <meta name="twitter:card" content="summary_large_image" />
+# <meta name="twitter:title" content="{news.title}" />
+# <meta name="twitter:description" content="{description}" />
+# <meta name="twitter:image" content="{image_url}" />
+# </head>
+# <body>
+# <div id="root"></div>
+# <script src="/static/js/main.js"></script>
+# </body>
+# </html>
+# """
 
-    return HTMLResponse(html)
+#     return HTMLResponse(html)
 
 
 
@@ -569,4 +569,4 @@ def read_news_detail(
 # </html>
 # """
 
-#     return HTMLResponse(content=html, status_code=200)
+# return HTMLResponse(content=html, status_code=200)

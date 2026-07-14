@@ -55,8 +55,7 @@ def admin_logout():
     return {"message": "Logged out"}
 
 
-# Add 06/07/2026 for image file check, to avoid overwriting 
-# existing files when uploading new ones
+# Add 06/07/2026 for image file name check , to avoid overwriting 
 
 @router.get("/check-image-exists")
 def check_image_exists(
