@@ -8,6 +8,7 @@ export default function NewsColumn({
   loading = false,
   category,
   sponsored = false,
+  layout = "default",
 }) {
   const formatDate = (dateString) => {
     if (!dateString) return null;
@@ -70,6 +71,8 @@ export default function NewsColumn({
         return "/cinemanews";
       case "meet-person":
         return "/meettheperson";
+      case "more-news":
+        return "/more"; 
       default:
         return `/${category}`;
     }

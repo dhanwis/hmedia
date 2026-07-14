@@ -40,6 +40,8 @@ export default function MediaSlider({
   video = false,
   loading = false,
   trending = false,
+    category = "more-news",
+    layout = "default",
 }) {
   const swiperRef = useRef(null);
   const [selectedVideo, setSelectedVideo] = useState(null);
@@ -169,7 +171,8 @@ export default function MediaSlider({
                   to={
                     trending
                       ? `/trending-news/${item.slug}`
-                      : `/more-news/${item.slug}`
+                      // : `/more-news/${item.slug}`
+                      : `/${category}/${item.slug}`
                   }
                   onClick={handleLinkClick}
                   className="group flex flex-col mb-3"
