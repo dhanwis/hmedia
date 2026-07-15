@@ -231,7 +231,9 @@ function Home() {
         fetchMoreNewsLimit(baseURL)
           .then((moreNewsData) => {
             setMoreNews(
-              moreNewsData.map((item) => ({
+              moreNewsData
+              .slice(0, 5) 
+              .map((item) => ({
                 title: item.title,
                 image: `${baseURL}/${item.image.replace(/\\/g, "/")}`,
                 date: item.date,
@@ -466,11 +468,18 @@ function Home() {
           </div>
 
           <div className="mb-6 lg:mb-0">
-            <NewsColumn
+            {/* <MediaSlider
               title="Meet The Person"
               items={meetThePerson}
               loading={loadingMeet}
               category="meet-person"
+             
+            /> */}
+             <NewsColumn
+              title="Business Stories"
+              items={moreNews}
+              loading={false}
+              category="more-news"
             />
           </div>
         </div>
@@ -480,16 +489,24 @@ function Home() {
         <div className="lg:col-span-9 flex flex-col gap-5">
           <InlineGoogleAd slot="7488478241" />
           <div className="mt-5">
-            <MediaSlider
+             {/* <NewsColumn
               title="Business Stories"
               items={moreNews}
               loading={false}
+              category="more-news"
+            /> */}
+            <MediaSlider
+              title="Meet The Person"
+              items={meetThePerson}
+              loading={loadingMeet}
+              category="meet-person"
+             
             />
           </div>
 
           <div className="flex justify-end">
               <Link
-                to="/more"
+                 to="/meettheperson"
                 className="flex items-center gap-1 text-sm font-bold text-brand-red hover:text-brand-dark transition-colors"
               >
                 View More <ArrowRight size={16} />

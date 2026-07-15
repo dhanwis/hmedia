@@ -37,23 +37,43 @@ export default function ArticleCard({
     window.dispatchEvent(new Event("show-loader"));
   };
 
+  // const sanitizeContent = (html, limit = 140) => {
+  //   if (!html) return "";
+
+  //   // Decode HTML entities
+  //   const textarea = document.createElement("textarea");
+  //   textarea.innerHTML = html;
+  //   let text = textarea.value;
+
+  //   // Remove HTML tags
+  //   text = text.replace(/<[^>]+>/g, " ");
+
+  //   // Remove prefixes like "NEWS:"
+  //   // text = text.replace(/^[^:]+:\s*/, "");
+
+  //   // Normalize spaces
+  //   text = text.replace(/\s+/g, " ").trim();
+
+  //   // Safe truncation
+  //   return text.length > limit ? text.slice(0, limit) + "…" : text;
+  // };
+  // REPLACE IT WITH THIS:
   const sanitizeContent = (html, limit = 140) => {
     if (!html) return "";
-
-    // Decode HTML entities
+    // Decode HTML entities (loop up to 5 times for double-escaping)
     const textarea = document.createElement("textarea");
-    textarea.innerHTML = html;
-    let text = textarea.value;
-
+    let lastVal = "";
+    let currentVal = html;
+    for (let i = 0; i < 5; i++) {
+      lastVal = currentVal;
+      textarea.innerHTML = currentVal;
+      currentVal = textarea.value;
+      if (currentVal === lastVal) break;
+    }
     // Remove HTML tags
-    text = text.replace(/<[^>]+>/g, " ");
-
-    // Remove prefixes like "NEWS:"
-    // text = text.replace(/^[^:]+:\s*/, "");
-
+    let text = currentVal.replace(/<[^>]+>/g, " ");
     // Normalize spaces
     text = text.replace(/\s+/g, " ").trim();
-
     // Safe truncation
     return text.length > limit ? text.slice(0, limit) + "…" : text;
   };
@@ -128,7 +148,7 @@ export default function ArticleCard({
           </p>
         )} */}
         <p className="text-xs sm:text-sm md:[text-14px] text-black mt-1.5 line-clamp-2 leading-relaxed">
-          {content}
+          {sanitizeContent(content, 140)}
         </p>
         {date && (
           <p className="text-xs text-gray-500 mt-2">{formatDate(date)}</p>
