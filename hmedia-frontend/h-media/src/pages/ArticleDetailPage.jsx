@@ -24,14 +24,27 @@ import { fetchFullScreenAds } from "../services/fullScreenAdService";
 import "react-quill-new/dist/quill.snow.css";
 
 
+// const decodeHTML = (html = "") => {
+//   if (typeof window === "undefined") return html;
+
+//   const textarea = document.createElement("textarea");
+//   textarea.innerHTML = html;
+//   return textarea.value;
+// };
 const decodeHTML = (html = "") => {
   if (typeof window === "undefined") return html;
-
   const textarea = document.createElement("textarea");
-  textarea.innerHTML = html;
-  return textarea.value;
+  let lastVal = "";
+  let currentVal = html;
+  // Recursively unescape up to 5 times to clean double-escaped database HTML
+  for (let i = 0; i < 5; i++) {
+    lastVal = currentVal;
+    textarea.innerHTML = currentVal;
+    currentVal = textarea.value;
+    if (currentVal === lastVal) break;
+  }
+  return currentVal;
 };
-
 const stripHTML = (html = "") =>
   decodeHTML(html)
     .replace(/<[^>]*>/g, "")
@@ -286,18 +299,32 @@ function ArticleDetailPage() {
 
   loadData();
 }, [baseURL, category, slug]);
-  const sanitizeHTML = (html) => {
-    if (!html) return "";
+  // const sanitizeHTML = (html) => {
+  //   if (!html) return "";
 
-    const textarea = document.createElement("textarea");
-    textarea.innerHTML = html;
-    let decoded = textarea.value;
+  //   const textarea = document.createElement("textarea");
+  //   textarea.innerHTML = html;
+  //   let decoded = textarea.value;
 
-    decoded = decoded.replace(/\s+/g, " ").trim();
+  //   decoded = decoded.replace(/\s+/g, " ").trim();
 
-    return decoded;
-  };
-
+  //   return decoded;
+  // };
+const sanitizeHTML = (html) => {
+  if (!html) return "";
+  const textarea = document.createElement("textarea");
+  let lastVal = "";
+  let currentVal = html;
+  // Recursively unescape up to 5 times to clean double-escaped database HTML
+  for (let i = 0; i < 5; i++) {
+    lastVal = currentVal;
+    textarea.innerHTML = currentVal;
+    currentVal = textarea.value;
+    if (currentVal === lastVal) break;
+  }
+  currentVal = currentVal.replace(/\s+/g, " ").trim();
+  return currentVal;
+};
   /* ---------------- LOADING ---------------- */
   if (loading) {
     return (
@@ -396,7 +423,7 @@ function ArticleDetailPage() {
         <meta property="og:title" content={stripHTML(article.title)} />
 
         {/* <meta property="og:type" content="article" /> */}
-        <meta property="og:title" content={article.title} />
+        <meta property="og:title" content={stripHTML(article.title)} />
         <meta
           property="og:description"
           content={truncate(stripHTML(article.content), 160)}
@@ -520,7 +547,7 @@ function ArticleDetailPage() {
             {/* SHARE */}
             <div className="flex justify-end mt-10">
               <ShareButtons
-                title={article.title}
+                title={stripHTML(article.title)}
                 slug={slug}
                 category={category}
                 image={`${baseURL.replace(/\/$/, "")}/${article.image
@@ -550,7 +577,7 @@ function ArticleDetailPage() {
 
       <div>
         <ShareThisInline
-          title={article.title}
+          title={stripHTML(article.title)}
           description={truncate(stripHTML(article?.content || ""), 120)}
           image={`${baseURL.replace(/\/$/, "")}/${article.image
             .replace(/^\//, "")

@@ -26,26 +26,45 @@ export default function NewsColumn({
     }
   };
 
-  const sanitizeContent = (html, limit = 140) => {
-    if (!html) return "";
+  // const sanitizeContent = (html, limit = 140) => {
+  //   if (!html) return "";
 
-    // Decode HTML entities
-    const textarea = document.createElement("textarea");
-    textarea.innerHTML = html;
-    let text = textarea.value;
+  //   // Decode HTML entities
+  //   const textarea = document.createElement("textarea");
+  //   textarea.innerHTML = html;
+  //   let text = textarea.value;
 
-    // Remove HTML tags
-    text = text.replace(/<[^>]+>/g, " ");
+  //   // Remove HTML tags
+  //   text = text.replace(/<[^>]+>/g, " ");
 
    
 
+  //   // Normalize spaces
+  //   text = text.replace(/\s+/g, " ").trim();
+
+  //   // Safe truncation
+  //   return text.length > limit ? text.slice(0, limit) + "…" : text;
+  // };
+// REPLACE IT WITH THIS:
+  const sanitizeContent = (html, limit = 140) => {
+    if (!html) return "";
+    // Decode HTML entities (loop up to 5 times for double-escaping)
+    const textarea = document.createElement("textarea");
+    let lastVal = "";
+    let currentVal = html;
+    for (let i = 0; i < 5; i++) {
+      lastVal = currentVal;
+      textarea.innerHTML = currentVal;
+      currentVal = textarea.value;
+      if (currentVal === lastVal) break;
+    }
+    // Remove HTML tags
+    let text = currentVal.replace(/<[^>]+>/g, " ");
     // Normalize spaces
     text = text.replace(/\s+/g, " ").trim();
-
     // Safe truncation
     return text.length > limit ? text.slice(0, limit) + "…" : text;
   };
-
   // Skeleton placeholder
   const SkeletonItem = () => (
     <div className="flex gap-3 sm:gap-4 items-start animate-pulse">
@@ -64,6 +83,7 @@ export default function NewsColumn({
   };
 
   const getViewMorePath = () => {
+    console.log("Category:", category);
     switch (category) {
       case "news":
         return "/latestnews";
@@ -73,11 +93,13 @@ export default function NewsColumn({
         return "/meettheperson";
       case "more-news":
         return "/more"; 
+      
       default:
         return `/${category}`;
     }
+   
   };
-
+    
   return (
     <div className="flex flex-col">
       {/* TITLE */}
@@ -133,12 +155,17 @@ export default function NewsColumn({
                      {sanitizeContent(item.title, 100)}
 
                   </h3>
-
+{/* 
                 {item.content && (
   <div className="text-xs sm:text-sm md:text-[14px] text-black mt-1.5 leading-relaxed font-mal line-clamp-2">
     {item.content}
   </div>
-)}
+)} */}
+  {item.content && (
+                  <div className="text-xs sm:text-sm md:text-[14px] text-black mt-1.5 leading-relaxed font-mal line-clamp-2">
+                    {sanitizeContent(item.content, 140)}
+                  </div>
+                )}
 
                   {item.date && (
                     <p className="text-[10px] sm:text-xs text-gray-500 mt-1">
@@ -151,7 +178,7 @@ export default function NewsColumn({
       </div>
 
       {/* VIEW MORE */}
-      {!trending && !loading && items.length >= 5 && (
+      {!trending && !loading && items.length >= 5 &&  (
         <div className="mt-6 text-center">
           <Link
             to={getViewMorePath()}

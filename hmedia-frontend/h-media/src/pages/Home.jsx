@@ -506,7 +506,7 @@ function Home() {
 
           <div className="flex justify-end">
               <Link
-                to="/more"
+                 to="/meettheperson"
                 className="flex items-center gap-1 text-sm font-bold text-brand-red hover:text-brand-dark transition-colors"
               >
                 View More <ArrowRight size={16} />
