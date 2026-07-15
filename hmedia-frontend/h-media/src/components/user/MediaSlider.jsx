@@ -138,7 +138,11 @@ export default function MediaSlider({
                   >
                     <img
                       src={item.image}
-                      alt={item.title}
+                      // 10/07/26
+                      alt={item.title.replace(/<[^>]*>/g, "")}
+
+                      // alt={item.title}
+
                       loading="lazy"
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
@@ -153,7 +157,10 @@ export default function MediaSlider({
 
                   {/* TITLE → NOT LINK */}
                   <h3 className="font-bold text-base line-clamp-2 font-mal transition-colors duration-300 group-hover:text-brand-red">
-                    {item.title}
+                    {/* {item.title} */}
+                    {/* 10/06/26 */}
+                    {item.title.replace(/<[^>]*>/g, "")}
+
                   </h3>
                 </div>
               ) : (
@@ -170,7 +177,9 @@ export default function MediaSlider({
                   <div className="relative w-full overflow-hidden rounded-lg mb-3 aspect-video">
                     <img
                       src={item.image}
-                      alt={item.title}
+                      // 10/07/26
+                      alt={item.title.replace(/<[^>]*>/g, "")}
+                      // alt={item.title}
                       className="w-full h-full object-fill transform-gpu transition-transform duration-500 group-hover:scale-105"
                     />
 
@@ -190,7 +199,9 @@ export default function MediaSlider({
                   </div>
 
                   <p className="font-bold text-base md:text-[18px] leading-snug line-clamp-2 font-mal group-hover:text-brand-red transition-colors mb-2">
-                    {item.title}
+                    {/* {item.title} */}
+                    {/* 10/06/26 */}
+                    {item.title.replace(/<[^>]*>/g, "")}
                   </p>
 
                   {/* <p className="text-xs sm:text-sm md:[text-14px] text-black leading-relaxed line-clamp-2 font-mal mb-1">

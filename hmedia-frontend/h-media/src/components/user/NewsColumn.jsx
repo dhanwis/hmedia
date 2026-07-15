@@ -124,7 +124,11 @@ export default function NewsColumn({
                 {/* TEXT */}
                 <div className="flex-1 min-w-0">
                   <h3 className="font-semibold sm:font-bold text-gray-800 text-base md:text-[18px] leading-snug group-hover:text-brand-red transition-colors duration-300 line-clamp-2 overflow-hidden font-mal">
-                    {item.title}
+                    {/* {item.title} */}
+            {/* 10/06/26 */}
+                     {/* {item.title.replace(/<[^>]*>/g, "")} */}
+                     {sanitizeContent(item.title, 100)}
+
                   </h3>
 
                 {item.content && (

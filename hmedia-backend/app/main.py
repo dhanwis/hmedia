@@ -5,7 +5,7 @@ from app.routers import (news, admin,banner,cinema_news,
                          cinema_news, meet_the_person, more_news,
                          flashnews, teaser_and_promo, square_ad,
                          banner_ad, bottom_banner_ad,trending_news,
-                         full_screen_ad, pop_up_ad )
+                         full_screen_ad, pop_up_ad, seo_routes )
 
 
 # Create database tables
@@ -72,3 +72,5 @@ app.include_router(pop_up_ad.public_router)
 
 
 # app.include_router(seo_routes.router) 
+# Include SEO router (this intercepts and delivers pages to search engine bots/crawlers)
+app.include_router(seo_routes.router)

@@ -6,11 +6,28 @@ import { useApi } from "../../context/ApiContext";
 import { checkImageExists } from "../../services/fetchArticleBySlug";
 import DatePicker from "react-datepicker";
 import { UploadCloud, X } from "lucide-react";
-import ReactQuill from "react-quill-new";
+import ReactQuill, { Quill } from "react-quill-new";
+
 import "../../videoBlot";
 
 import "react-quill-new/dist/quill.snow.css";
 import "react-datepicker/dist/react-datepicker.css";
+
+
+// Register custom fonts with Quill
+
+const Font = Quill.import("formats/font");
+Font.whitelist = [
+  "sans-serif", 
+  "serif", 
+  "monospace", 
+  "poppins", 
+  "noto-serif-malayalam", 
+  "anek-malayalam", 
+  "manjari", 
+  "baloo-chettan"
+];
+Quill.register(Font, true);
 
 const formatSlug = (value) => {
   return value
@@ -112,7 +129,9 @@ function AddArticle({
     () => ({
       toolbar: {
         container: [
-          [{ font: [] }],
+          [{ font: ["sans-serif", "serif", "monospace", "poppins", "noto-serif-malayalam", "anek-malayalam", "manjari", "baloo-chettan"] }],
+
+
           [{ size: ["small", false, "large", "huge"] }],
           [{ header: [1, 2, 3, 4, 5, 6, false] }],
           ["bold", "italic", "underline", "strike"],
@@ -158,6 +177,53 @@ function AddArticle({
     "image",
     "video",
   ];
+
+  // 10/07/26
+  
+    const titleModules = useMemo(
+    () => ({
+      toolbar: [
+        [{ font: ["sans-serif", "serif", "monospace", "poppins", "noto-serif-malayalam", "anek-malayalam", "manjari", "baloo-chettan"] }],
+
+        [{ size: ["small", false, "large", "huge"] }],
+        [{ header: [1, 2, 3, 4, 5, 6, false] }],
+        ["bold", "italic", "underline", "strike"],
+        [{ color: [] }, { background: [] }],
+        [{ script: "sub" }, { script: "super" }],
+        ["blockquote", "code-block"],
+        [{ list: "ordered" }, { list: "bullet" }],
+        [{ indent: "-1" }, { indent: "+1" }],
+        [{ direction: "rtl" }],
+        [{ align: [] }],
+        ["clean"],
+      ],
+      clipboard: {
+        matchVisual: false,
+      },
+    }),
+    []
+  );
+
+  const titleFormats = [
+    "header",
+    "font",
+    "size",
+    "bold",
+    "italic",
+    "underline",
+    "strike",
+    "color",
+    "background",
+    "script",
+    "blockquote",
+    "code-block",
+    "list",
+    "indent",
+    "direction",
+    "align",
+  ];
+
+
 
   useEffect(() => {
     if (initialData) {
@@ -399,7 +465,13 @@ function AddArticle({
 
     const newErrors = {};
 
-    if (!title.trim()) newErrors.title = "Title is required";
+
+    // 10/07/26
+
+    // if (!title.trim()) newErrors.title = "Title is required";
+    if (!title || title.trim() === "" || title === "<p><br></p>")newErrors.title = "Title is required";
+
+      
     if (!slug.trim()) newErrors.slug = "Slug is required";
     if (!author.trim()) newErrors.author = "Author is required";
     if (!publishedDate) newErrors.publishedDate = "Published date is required";
@@ -466,10 +538,27 @@ function AddArticle({
         </div>
         {/* CATEGORY */}
 
+        {/* 10/07/26 */}
+
+      {/* TITLE */}
+        <div className="mb-4">  {/* Changed from mb-12 to mb-4 */}
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Title
+          </label>
+          <ReactQuill
+            theme="snow"
+            value={title}
+            onChange={setTitle}
+            modules={titleModules}
+            formats={titleFormats}
+            placeholder="Write Title..."
+            /* No height class here so it flows naturally in the browser */
+          />
+        </div>
 
 
         {/* TITLE */}
-        <div>
+        {/* <div>
           <label className="block text-sm font-medium text-gray-700">
             Title
           </label>
@@ -483,10 +572,14 @@ function AddArticle({
           {errors.title && (
             <p className="text-red-600 text-sm mt-2">{errors.title}</p>
           )}
-        </div>
+        </div> */}
 
         {/* SLUG */}
-        <div>
+
+      {/* 10/06/26 */}
+
+      {/* SLUG */}
+        <div className="mt-16">  {/* <-- Added mt-16 here to push the slug down */}
           <label className="block text-sm font-medium text-gray-700">
             Slug
           </label>
@@ -501,6 +594,23 @@ function AddArticle({
             <p className="text-red-600 text-sm mt-2">{errors.slug}</p>
           )}
         </div>
+
+
+        {/* <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Slug
+          </label>
+          <input
+            type="text"
+            className="mt-1 block w-full px-4 py-2.5 bg-gray-50 border border-gray-300 focus:outline-none focus:ring-0 focus:border-brand-red rounded-lg"
+            value={slug}
+            onChange={(e) => setSlug(formatSlug(e.target.value))}
+            placeholder="Write Slug"
+          />
+          {errors.slug && (
+            <p className="text-red-600 text-sm mt-2">{errors.slug}</p>
+          )}
+        </div> */}
 
         {/* CONTENT */}
         <div className="mb-12">

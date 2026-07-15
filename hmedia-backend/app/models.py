@@ -207,17 +207,6 @@ class PopUpAd(Base):
     link = Column(String(500), nullable=True)
     status = Column(Boolean, nullable=False, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-    
-
-
-
-    
-    
-    
-    
-    
-    
-
 class Trendingnews(Base):
     __tablename__ = "trending_news"
 
@@ -233,4 +222,5 @@ class Trendingnews(Base):
     source_type = Column(String(50), nullable=False)  # news | cinema | meet | more
     source_id = Column(Integer, nullable=False)
     
-    
+
+

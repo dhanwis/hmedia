@@ -77,7 +77,11 @@ export default function FlashNews() {
                     size={28}
                     className="text-yellow-300 fill-yellow-300 mt-1"
                   />
-                  <p className="mt-2.5 lg:mt-[8px]">{item.title}</p>
+                  {/* <p className="mt-2.5 lg:mt-[8px]">{item.title}</p> */}
+                  {/* 10/06/26 */}
+                  <p className="mt-2.5 lg:mt-[8px]">
+                   {new DOMParser().parseFromString(item.title, 'text/html').body.textContent || ""}
+                  </p>
                 </>
               );
 
