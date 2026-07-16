@@ -8,7 +8,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.models import News, CinemaNews, MeetThePerson, MoreNews
+from app.models import News, CinemaNews, MeetThePerson, MoreNews, Trendingnews
 
 router = APIRouter()
 
@@ -59,10 +59,12 @@ def get_article_by_category(db: Session, category: str, slug: str):
     category = category.lower().replace("-", "").replace("_", "")
     if category == "cinemanews":
         return db.query(CinemaNews).filter(CinemaNews.slug == slug).first()
-    elif category == "meettheperson":
+    elif category in ("meettheperson", "meetperson"):
         return db.query(MeetThePerson).filter(MeetThePerson.slug == slug).first()
-    elif category == "more":
+    elif category in ("more", "morenews"):
         return db.query(MoreNews).filter(MoreNews.slug == slug).first()
+    elif category == "trendingnews":
+        return db.query(Trendingnews).filter(Trendingnews.slug == slug).first()
     else:
         # Default category
         return db.query(News).filter(News.slug == slug).first()
@@ -72,7 +74,11 @@ def get_article_by_category(db: Session, category: str, slug: str):
 @router.get("/cinemanews/{slug}", response_class=HTMLResponse)
 @router.get("/meet-the-person/{slug}", response_class=HTMLResponse)
 @router.get("/meettheperson/{slug}", response_class=HTMLResponse)
+@router.get("/meet-person/{slug}", response_class=HTMLResponse)
 @router.get("/more/{slug}", response_class=HTMLResponse)
+@router.get("/more-news/{slug}", response_class=HTMLResponse)
+@router.get("/trending-news/{slug}", response_class=HTMLResponse)
+@router.get("/trendingnews/{slug}", response_class=HTMLResponse)
 def serve_seo_article(request: Request, slug: str, db: Session = Depends(get_db)):
     try:
         # Automatically detect the category from the URL path (e.g., "news" or "cinema-news")

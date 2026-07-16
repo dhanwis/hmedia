@@ -7,3 +7,5 @@ test.db
 # Ignore Python cache files
 __pycache__/
 *.pyc
+.vscode/
+*.zip
