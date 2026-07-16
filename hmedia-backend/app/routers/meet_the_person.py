@@ -247,82 +247,82 @@ def read_meet_person_api(
     return schemas.MeetThePersonOut.from_orm(person)
 
 
-@public_router.get("/{slug}", response_model=None)
-def read_meet_person_detail(
-    request: Request,
-    slug: str,
-    db: Session = Depends(get_db)
-):
-    person = db.query(MeetThePerson).filter(MeetThePerson.slug == slug).first()
-    if not person:
-        raise HTTPException(status_code=404)
-
-    user_agent = request.headers.get("user-agent", "").lower()
-    is_bot = any(bot in user_agent for bot in BOT_KEYWORDS)
-
-# change today 3/26
-
-    # NORMAL USERS → React SPA
-
-
-    # if not is_bot:
-    #     raise HTTPException(status_code=404)
-
-
-        # NORMAL USERS → Redirect to Frontend domain
-    if not is_bot:
-        return RedirectResponse(url=f"{FRONTEND_URL}/meet-person/{slug}", status_code=302)
-
-
-    
-
-
-#changed today 3/26
-
-    # BOT → OG HTML
-    # image_url = (
-    #     person.image if person.image and person.image.startswith("http")
-    #     else f"{BACKEND_URL}/{person.image}"
-    #     if person.image
-    #     else f"{BACKEND_URL}/static/brand/og-default.jpg"
-    # )
-
-    if person.image:
-        if person.image.startswith("http"):
-            image_url = person.image
-        else:
-            image_url = f"{BACKEND_URL}/{urllib.parse.quote(person.image)}"
-    else:
-        image_url = f"{BACKEND_URL}/static/brand/og-default.jpg"
-
-
-    clean_text = re.sub(r"<[^>]+>", "", person.content or "")
-    clean_text = re.sub(r"\s+", " ", clean_text).strip()
-    description = clean_text[:200] + (" Read more on HMedia." if len(clean_text) < 40 else "")
-
-    html = f"""<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>{person.title}</title>
-
-<meta name="description" content="{description}" />
-<meta property="og:title" content="{person.title}" />
-<meta property="og:description" content="{description}" />
-<meta property="og:url" content="{FRONTEND_URL}/meet-person/{person.slug}" />
-<meta property="og:type" content="article" />
-<meta property="og:site_name" content="HMedia" />
-<meta property="og:image" content="{image_url}" />
-<meta property="og:image:secure_url" content="{image_url}" />
-<meta property="og:image:width" content="1200" />
-<meta property="og:image:height" content="630" />
-<meta name="twitter:card" content="summary_large_image" />
-</head>
-<body></body>
-</html>
-"""
-
-    return HTMLResponse(html)
+# @public_router.get("/{slug}", response_model=None)
+# def read_meet_person_detail(
+#     request: Request,
+#     slug: str,
+#     db: Session = Depends(get_db)
+# ):
+#     person = db.query(MeetThePerson).filter(MeetThePerson.slug == slug).first()
+#     if not person:
+#         raise HTTPException(status_code=404)
+# 
+#     user_agent = request.headers.get("user-agent", "").lower()
+#     is_bot = any(bot in user_agent for bot in BOT_KEYWORDS)
+# 
+# # change today 3/26
+# 
+#     # NORMAL USERS → React SPA
+# 
+# 
+#     # if not is_bot:
+#     #     raise HTTPException(status_code=404)
+# 
+# 
+#         # NORMAL USERS → Redirect to Frontend domain
+#     if not is_bot:
+#         return RedirectResponse(url=f"{FRONTEND_URL}/meet-person/{slug}", status_code=302)
+# 
+# 
+#     
+# 
+# 
+# #changed today 3/26
+# 
+#     # BOT → OG HTML
+#     # image_url = (
+#     #     person.image if person.image and person.image.startswith("http")
+#     #     else f"{BACKEND_URL}/{person.image}"
+#     #     if person.image
+#     #     else f"{BACKEND_URL}/static/brand/og-default.jpg"
+#     # )
+# 
+#     if person.image:
+#         if person.image.startswith("http"):
+#             image_url = person.image
+#         else:
+#             image_url = f"{BACKEND_URL}/{urllib.parse.quote(person.image)}"
+#     else:
+#         image_url = f"{BACKEND_URL}/static/brand/og-default.jpg"
+# 
+# 
+#     clean_text = re.sub(r"<[^>]+>", "", person.content or "")
+#     clean_text = re.sub(r"\s+", " ", clean_text).strip()
+#     description = clean_text[:200] + (" Read more on HMedia." if len(clean_text) < 40 else "")
+# 
+#     html = f"""<!DOCTYPE html>
+# <html lang="en">
+# <head>
+# <meta charset="UTF-8">
+# <title>{person.title}</title>
+# 
+# <meta name="description" content="{description}" />
+# <meta property="og:title" content="{person.title}" />
+# <meta property="og:description" content="{description}" />
+# <meta property="og:url" content="{FRONTEND_URL}/meet-person/{person.slug}" />
+# <meta property="og:type" content="article" />
+# <meta property="og:site_name" content="HMedia" />
+# <meta property="og:image" content="{image_url}" />
+# <meta property="og:image:secure_url" content="{image_url}" />
+# <meta property="og:image:width" content="1200" />
+# <meta property="og:image:height" content="630" />
+# <meta name="twitter:card" content="summary_large_image" />
+# </head>
+# <body></body>
+# </html>
+# """
+# 
+#     return HTMLResponse(html)
 
 
 
